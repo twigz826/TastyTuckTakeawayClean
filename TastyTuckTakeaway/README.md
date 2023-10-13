@@ -24,3 +24,14 @@ Tasty Tuck Takeaway
 Project Purpose
 ==================
 This app will be used for a Clean Code workshop presented to new graduates. I will be muddying the app in a separate project and asking the graduates to identify code smells and fix them.
+
+
+Running the App
+==================
+Before running the app, you will need to configure a throwaway gmail account which will be used to send verification/confirmation emails to the customer.
+
+Once the gmail account is configured, you will need to enable 2 Step Verification and then add an app password.
+
+In the EmailService, you will then see the names of the 2 environment variables that need to be configured (the email address and app password).
+
+Once these are configured, run the app in visual studio and enjoy some tasty tuck!
