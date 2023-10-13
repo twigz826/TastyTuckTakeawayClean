@@ -30,11 +30,6 @@ namespace TastyTuckTakeaway.Core.Models
         {
             var menuItem = _cachedMenuItems!.FirstOrDefault(item => item.Id == id);
 
-            //if (menuItem == null)
-            //{
-            //    throw new InvalidOperationException($"Item with id: {id} does not exist on the menu");
-            //}
-
             return menuItem;
         }
 

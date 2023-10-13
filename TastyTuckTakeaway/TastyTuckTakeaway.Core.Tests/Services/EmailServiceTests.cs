@@ -16,7 +16,6 @@ namespace TastyTuckTakeaway.Core.Tests.Services
             var emailAddress = "test@example.com";
             var testOtp = "123456";
 
-            // Setup behavior for SendEmailAsync when emailType is Verification
             A.CallTo(() => emailService.SendEmailAsync(emailAddress, EmailTypes.Verification, 0, A<IEnumerable<OrderItem>>.Ignored))
                 .ReturnsNextFromSequence(new VerificationEmailResultToken(true, emailAddress, testOtp));
 
@@ -41,7 +40,6 @@ namespace TastyTuckTakeaway.Core.Tests.Services
             var orderNumber = 123456;
             var orderItems = new List<OrderItem> { OrderItem.Create(new MenuItem(1, "Spring Rolls", 5, "starters"), 1) };
 
-            // Setup behavior for SendEmailAsync when emailType is Verification
             A.CallTo(() => emailService.SendEmailAsync(emailAddress, EmailTypes.OrderConfirmation, orderNumber, orderItems))
                 .ReturnsNextFromSequence(new OrderConfirmationEmailResultToken(true, emailAddress, orderNumber));
 

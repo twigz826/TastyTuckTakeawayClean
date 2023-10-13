@@ -95,7 +95,6 @@
 
             OrderNumber = GenerateRandomOrderNumber();
 
-            //Console.WriteLine($"Your order total is £{CalculateTotal()}. Please provide additional information below to confirm your order");
             return true;
         }
 
