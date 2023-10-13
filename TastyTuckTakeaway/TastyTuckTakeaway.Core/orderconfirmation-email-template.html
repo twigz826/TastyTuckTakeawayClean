@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            margin-bottom: 20px;
+        }
+
+        .confirmation-message {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #333333;
+        }
+
+        .order-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff7f50;
+        }
+
+        .order-details {
+            margin-top: 30px;
+            font-size: 16px;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #999999;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <div class="confirmation-message">
+            <p>Thank you for placing your order with us! The best food you have ever tasted is on its way.</p>
+            <p>Your Order Number is: <span class="order-number">{{OrderNumber}}</span></p>
+        </div>
+        <div class="order-details">
+            <p><strong>Order Details:</strong></p>
+            {{OrderItems}}
+        </div>
+        <div class="footer">
+            <p>
+                Questions or concerns? Contact us at <a href="mailto:info@tastytucktakeaway.com">info@tastytucktakeaway.com</a> or call us at
+                <a href="tel:+44 1234 877112">+44 1234 877112</a>.
+            </p>
+            <p>
+                Follow us on social media: <a href="https://facebook.com">Facebook</a> |
+                <a href="https://twitter.com">Twitter</a> |
+                <a href="https://instagram.com">Instagram</a>
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>
+

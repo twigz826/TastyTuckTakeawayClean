@@ -1,0 +1,170 @@
+﻿[
+  {
+    "id": 1,
+    "category": "starters",
+    "name": "Spring Rolls",
+    "price": 5
+  },
+  {
+    "id": 2,
+    "category": "starters",
+    "name": "Prawn Crackers",
+    "price": 3
+  },
+  {
+    "id": 3,
+    "category": "starters",
+    "name": "Chinese Style Pork Ribs",
+    "price": 8
+  },
+  {
+    "id": 4,
+    "category": "starters",
+    "name": "Sesame Prawn Toast",
+    "price": 5
+  },
+  {
+    "id": 5,
+    "category": "starters",
+    "name": "Crispy Seaweed",
+    "price": 3.5
+  },
+  {
+    "id": 6,
+    "category": "starters",
+    "name": "1/4 Aromatic Duck",
+    "price": 8
+  },
+  {
+    "id": 7,
+    "category": "starters",
+    "name": "1/2 Aromatic Duck",
+    "price": 15
+  },
+  {
+    "id": 8,
+    "category": "starters",
+    "name": "Chicken Balls",
+    "price": 7
+  },
+  {
+    "id": 9,
+    "category": "mains",
+    "name": "Beef in Black Bean Sauce",
+    "price": 10
+  },
+  {
+    "id": 10,
+    "category": "mains",
+    "name": "Kung Po Prawns",
+    "price": 12
+  },
+  {
+    "id": 11,
+    "category": "mains",
+    "name": "Chicken Chow Mein",
+    "price": 9
+  },
+  {
+    "id": 12,
+    "category": "mains",
+    "name": "Crispy Shredded Beef",
+    "price": 11
+  },
+  {
+    "id": 13,
+    "category": "mains",
+    "name": "Lemon Chicken",
+    "price": 9
+  },
+  {
+    "id": 14,
+    "category": "mains",
+    "name": "Singapore Style Noodles",
+    "price": 10
+  },
+  {
+    "id": 15,
+    "category": "mains",
+    "name": "Salt and Pepper King Prawns",
+    "price": 13
+  },
+  {
+    "id": 16,
+    "category": "mains",
+    "name": "Mongolian Beef",
+    "price": 12
+  },
+  {
+    "id": 17,
+    "category": "desserts",
+    "name": "Fortune Cookies",
+    "price": 2
+  },
+  {
+    "id": 18,
+    "category": "desserts",
+    "name": "Mango Pudding",
+    "price": 6
+  },
+  {
+    "id": 19,
+    "category": "desserts",
+    "name": "Almond Cookies",
+    "price": 4.5
+  },
+  {
+    "id": 20,
+    "category": "desserts",
+    "name": "Sesame Balls",
+    "price": 5.5
+  },
+  {
+    "id": 21,
+    "category": "desserts",
+    "name": "Red Bean Pancakes",
+    "price": 7
+  },
+  {
+    "id": 22,
+    "category": "drinks",
+    "name": "Green Tea",
+    "price": 3
+  },
+  {
+    "id": 23,
+    "category": "drinks",
+    "name": "Jasmine Tea",
+    "price": 3
+  },
+  {
+    "id": 24,
+    "category": "drinks",
+    "name": "Coca-cola",
+    "price": 2.5
+  },
+  {
+    "id": 25,
+    "category": "drinks",
+    "name": "Diet Coke",
+    "price": 2.5
+  },
+  {
+    "id": 26,
+    "category": "drinks",
+    "name": "Tsingtao beer",
+    "price": 5
+  },
+  {
+    "id": 27,
+    "category": "drinks",
+    "name": "Lychee Punch",
+    "price": 4.5
+  },
+  {
+    "id": 28,
+    "category": "drinks",
+    "name": "Sparkling Water",
+    "price": 3
+  }
+]
