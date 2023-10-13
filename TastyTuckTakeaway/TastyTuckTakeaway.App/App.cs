@@ -26,7 +26,7 @@ namespace TastyTuckTakeaway.App
             _addressManager = addressManager;
         }
 
-        public void RunAsync()
+        public async Task RunAsync()
         {
             GreetCustomer();
 
@@ -36,10 +36,10 @@ namespace TastyTuckTakeaway.App
             DisplayOrderingInstructions();
             OrderingOptionsScreen();
 
-            var emailResultToken = SendVerificationEmail();
+            var emailResultToken = await SendVerificationEmail();
             while (!ConfirmOtp(emailResultToken!.OTP))
             {
-                emailResultToken = RetryOtpVerification(emailResultToken);
+                emailResultToken = await RetryOtpVerification(emailResultToken);
                 if (emailResultToken is null)
                 {
                     ExitApplication(1);
@@ -54,13 +54,15 @@ namespace TastyTuckTakeaway.App
             var houseNumber = GetCustomerHouseNumber();
             CheckValidAddressInput(houseNumber);
 
-            var streetName = "Princes Street";
+            var streetName = GetCustomerStreetName();
+            CheckValidAddressInput(streetName);
+
             AddAddressToOrder(houseNumber, streetName, postcode);
 
-            if (ObtainPayment())
+            if (await ObtainPayment())
             {
                 FullSuccessMessage();
-                SendOrderConfirmationEmail(emailResultToken.EmailAddress);
+                await SendOrderConfirmationEmail(emailResultToken.EmailAddress);
             }
             else
             {
@@ -101,12 +103,12 @@ namespace TastyTuckTakeaway.App
             Console.WriteLine("Thank you for choosing Tasty Tuck, we hope you enjoy your meal!");
         }
 
-        private void ExitApplication(int errorCode)
+        private static void ExitApplication(int errorCode)
         {
             Environment.Exit(errorCode);
         }
 
-        private bool ObtainPayment()
+        private async Task<bool> ObtainPayment()
         {
             PaymentInstructions();
             var paymentAttempts = 0;
@@ -117,7 +119,7 @@ namespace TastyTuckTakeaway.App
 
                 if (_paymentManager.IsValidPaymentInfo(paymentInfo))
                 {
-                    var paymentResult = TakeCustomerPayment(paymentInfo!).GetAwaiter().GetResult();
+                    var paymentResult = await TakeCustomerPayment(paymentInfo!);
 
                     if (paymentResult)
                     {
@@ -188,12 +190,33 @@ namespace TastyTuckTakeaway.App
                 var postcode = GetUserInput()!;
                 if (_addressManager.IsValidUKPostcode(postcode))
                 {
-                    validPostcode = true;
-                    return postcode;
+                    return postcode!;
                 }
                 else
                 {
                     Console.WriteLine("Invalid postcode, please try again");
+                    invalidEntries++;
+                }
+            }
+            return string.Empty;
+        }
+
+        private string GetCustomerStreetName()
+        {
+            bool validStreetName = false;
+            int invalidEntries = 0;
+
+            while (!validStreetName && invalidEntries < 4)
+            {
+                Console.Write("Enter your street name: ");
+                var streetName = GetUserInput();
+                if (_addressManager.IsValidStreetName(streetName))
+                {
+                    return streetName!;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid street name, please try again");
                     invalidEntries++;
                 }
             }
@@ -211,7 +234,7 @@ namespace TastyTuckTakeaway.App
                 var houseNum = GetUserInput()!;
                 if (_addressManager.IsValidHouseNumber(houseNum))
                 {
-                    return houseNum;
+                    return houseNum!;
                 }
                 else
                 {
@@ -329,12 +352,12 @@ namespace TastyTuckTakeaway.App
             Console.WriteLine("-----------------------------------------------------------------------");
         }
 
-        private VerificationEmailResultToken? SendVerificationEmail(string emailAddress = "")
+        private async Task<VerificationEmailResultToken?> SendVerificationEmail(string emailAddress = "")
         {
             var customerEmailAddress = String.IsNullOrEmpty(emailAddress) ? GetCustomerEmailAddress() : emailAddress;
-            if (_emailService.IsValidEmail(customerEmailAddress))
+            if (_emailService.IsValidEmail(customerEmailAddress!))
             {
-                return SendEmail<VerificationEmailResultToken>(customerEmailAddress, EmailTypes.Verification);
+                return await SendEmail<VerificationEmailResultToken>(customerEmailAddress!, EmailTypes.Verification);
             }
             else
             {
@@ -343,15 +366,15 @@ namespace TastyTuckTakeaway.App
             return null;
         }
 
-        private OrderConfirmationEmailResultToken? SendOrderConfirmationEmail(string emailAddress)
+        private async Task<OrderConfirmationEmailResultToken?> SendOrderConfirmationEmail(string emailAddress)
         {
-            return SendEmail<OrderConfirmationEmailResultToken>(emailAddress, EmailTypes.OrderConfirmation, _restaurant.GetOrderNumber(), _restaurant.GetBasketItems());
+            return await SendEmail<OrderConfirmationEmailResultToken>(emailAddress, EmailTypes.OrderConfirmation, _restaurant.GetOrderNumber(), _restaurant.GetBasketItems());
         }
 
-        private TEmailResultToken? SendEmail<TEmailResultToken>(string emailAddress, EmailTypes emailType, int orderNumber = 0, IEnumerable<OrderItem>? orderItems = null)
+        private async Task<TEmailResultToken?> SendEmail<TEmailResultToken>(string emailAddress, EmailTypes emailType, int orderNumber = 0, IEnumerable<OrderItem>? orderItems = null)
             where TEmailResultToken : EmailResultTokenBase
         {
-            var emailSentToken = _emailService.SendEmailAsync(emailAddress, emailType, orderNumber, orderItems).GetAwaiter().GetResult();
+            var emailSentToken = await _emailService.SendEmailAsync(emailAddress, emailType, orderNumber, orderItems);
             if (emailSentToken is not null && emailSentToken.Success)
             {
                 return (TEmailResultToken)emailSentToken;
@@ -363,11 +386,11 @@ namespace TastyTuckTakeaway.App
             return null;
         }
 
-        private string GetCustomerEmailAddress()
+        private string? GetCustomerEmailAddress()
         {
             Console.WriteLine("An email will be sent to you with an OTP for verification purposes");
             Console.Write("Please enter your email address: ");
-            var emailAddress = GetUserInput()!;
+            var emailAddress = GetUserInput();
             return emailAddress;
         }
 
@@ -387,13 +410,13 @@ namespace TastyTuckTakeaway.App
             }
         }
 
-        private VerificationEmailResultToken? RetryOtpVerification(EmailResultTokenBase initialToken)
+        private async Task<VerificationEmailResultToken?> RetryOtpVerification(EmailResultTokenBase initialToken)
         {
             Console.Write("Would you like to request another OTP? (Y/N): ");
             var retryChoice = GetUserInput()?.ToLower();
             if (retryChoice == "y")
             {
-                return SendVerificationEmail(initialToken.EmailAddress);
+                return await SendVerificationEmail(initialToken.EmailAddress);
             }
             else
             {
@@ -412,7 +435,7 @@ namespace TastyTuckTakeaway.App
             _restaurant.AddAddressToOrder(houseNumber, streetName, postcode);
         }
 
-        public string? GetUserInput()
+        public static string? GetUserInput()
         {
             var userInput = Console.ReadLine()?.Trim().ToLower();
 

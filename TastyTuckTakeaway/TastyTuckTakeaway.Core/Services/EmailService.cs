@@ -60,10 +60,14 @@ namespace TastyTuckTakeaway.Core.Services
             }
         }
 
-        public bool IsValidEmail(string emailAddress)
+        public bool IsValidEmail(string? emailAddress)
         {
             string emailPattern = @"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$";
-            return Regex.IsMatch(emailAddress, emailPattern);
+            if (emailAddress is not null)
+            {
+                return Regex.IsMatch(emailAddress, emailPattern);
+            }
+            return false;
         }
 
         private static MailMessage ComposeVerificationEmail(string emailAddress, string sender, string otp)

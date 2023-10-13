@@ -5,6 +5,7 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{47CBA84E-0255-4692-B87B-C96DE5917B2B}"
 	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
 		DomainModel.md = DomainModel.md
 		README.md = README.md
 	EndProjectSection
@@ -17,7 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{F034CBC9-A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TastyTuckTakeaway.Core.Tests", "TastyTuckTakeaway.Core.Tests\TastyTuckTakeaway.Core.Tests.csproj", "{CC897F17-72F8-41D6-8138-625F196FB4C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TastyTuckTakeaway.App", "TastyTuckTakeaway.App\TastyTuckTakeaway.App.csproj", "{C0605447-A6CA-4233-901E-CFCE2754CCE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TastyTuckTakeaway.App", "TastyTuckTakeaway.App\TastyTuckTakeaway.App.csproj", "{C0605447-A6CA-4233-901E-CFCE2754CCE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
