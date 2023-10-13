@@ -39,7 +39,7 @@ namespace TastyTuckTakeaway.Core.Helpers
 
         public bool IsValidStreetName(string? streetName)
         {
-            return String.IsNullOrEmpty(streetName) && streetName?.Length > 0;
+            return !String.IsNullOrEmpty(streetName) && streetName?.Length > 0;
         }
     }
 }

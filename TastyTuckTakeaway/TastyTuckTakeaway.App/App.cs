@@ -323,15 +323,15 @@ namespace TastyTuckTakeaway.App
                     break;
                 case "add":
                     var addSuccess = _restaurant.AddItemsToOrder(itemId, quantity);
-                    if (addSuccess) Console.WriteLine($"{quantity} x {_restaurant.GetMenuItemById(itemId)!.Name} added to order");
+                    AddSuccessResult(addSuccess, quantity, itemId);
                     break;
                 case "rm":
                     var removeSuccess = _restaurant.RemoveItemFromOrder(itemId);
-                    if (removeSuccess) Console.WriteLine($"{_restaurant.GetMenuItemById(itemId)!.Name} removed from order");
+                    RemoveSuccessResult(removeSuccess, itemId);
                     break;
                 case "edit":
                     var editSuccess = _restaurant.EditItemInOrder(itemId, quantity);
-                    if (editSuccess) Console.WriteLine($"{quantity} x {_restaurant.GetMenuItemById(itemId)!.Name} now in your order");
+                    EditSuccessResult(editSuccess, quantity, itemId);
                     break;
                 case "b":
                     Console.WriteLine("***BASKET***");
@@ -340,7 +340,8 @@ namespace TastyTuckTakeaway.App
                     Console.WriteLine($"Total: £{_restaurant.CalculateTotalOrderCost()}");
                     break;
                 case "c":
-                    if (_restaurant.FinaliseOrder()) orderCompleted = true;
+                    var IsOrderFinal = _restaurant.FinaliseOrder();
+                    FinaliseOrder(IsOrderFinal, out orderCompleted);
                     break;
                 case "clear":
                     ClearBasket();
@@ -350,6 +351,56 @@ namespace TastyTuckTakeaway.App
                     break;
             }
             Console.WriteLine("-----------------------------------------------------------------------");
+        }
+
+        private void AddSuccessResult(bool addSuccess, int quantity, int itemId)
+        {
+            if (addSuccess)
+            {
+                Console.WriteLine($"{quantity} x {_restaurant.GetMenuItemById(itemId)!.Name} added to order");
+            }
+            else
+            {
+                Console.WriteLine($"There are no items with number: {itemId} on the menu");
+            }
+        }
+
+        private void RemoveSuccessResult(bool removeSuccess, int itemId)
+        {
+            if (removeSuccess)
+            {
+                Console.WriteLine($"{_restaurant.GetMenuItemById(itemId)!.Name} removed from order");
+            }
+            else
+            {
+                Console.WriteLine($"There are no items with number: {itemId} currently in your basket");
+            }
+        }
+
+        private void EditSuccessResult(bool editSuccess, int quantity, int itemId)
+        {
+            if (editSuccess)
+            {
+                Console.WriteLine($"{quantity} x {_restaurant.GetMenuItemById(itemId)!.Name} now in your order");
+            }
+            else
+            {
+                Console.WriteLine($"There are no items with number: {itemId} currently in your basket");
+            }
+        }
+
+        private void FinaliseOrder(bool isOrderFinal, out bool orderCompleted)
+        {
+            if (isOrderFinal)
+            {
+                orderCompleted = true;
+                Console.WriteLine($"Your order total is £{_restaurant.CalculateTotalOrderCost()}. Please provide additional information below to confirm your order");
+            }
+            else
+            {
+                orderCompleted = false;
+                Console.WriteLine($"Your basket is empty, please add items to place an order");
+            }
         }
 
         private async Task<VerificationEmailResultToken?> SendVerificationEmail(string emailAddress = "")

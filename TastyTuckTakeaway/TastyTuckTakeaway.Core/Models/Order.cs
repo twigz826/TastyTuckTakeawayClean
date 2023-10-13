@@ -1,22 +1,5 @@
 ﻿namespace TastyTuckTakeaway.Core.Models
 {
-    //public interface IOrder
-    //{
-    //    void AddItemToBasket(int itemId, int quantity = 1);
-
-    //    IEnumerable<OrderItem> ViewItemsInBasket();
-
-    //    bool RemoveItemFromBasket(int itemId);
-
-    //    bool EditQuantity(int itemId, int newQuantity);
-
-    //    double CalculateTotal();
-
-    //    bool PlaceOrder();
-
-    //    bool IsBasketEmpty();
-    //}
-
     public class Order
     {
         private readonly IMenu _menu;
@@ -39,7 +22,6 @@
 
             if (menuItem == null)
             {
-                Console.WriteLine($"There are no items with number: {itemId} on the menu");
                 return false;
             }
 
@@ -64,7 +46,6 @@
         {
             if (!IsItemInBasket(itemId))
             {
-                Console.WriteLine($"There are no items with number: {itemId} currently in your basket");
                 return false;
             }
 
@@ -76,7 +57,6 @@
         {
             if (!IsItemInBasket(itemId))
             {
-                Console.WriteLine($"There are no items with number: {itemId} currently in your basket");
                 return false;
             }
 
@@ -110,13 +90,12 @@
         {
             if (IsBasketEmpty())
             {
-                Console.WriteLine($"Your basket is empty, please add items to place an order");
                 return false;
             }
 
             OrderNumber = GenerateRandomOrderNumber();
 
-            Console.WriteLine($"Your order total is £{CalculateTotal()}. Please provide additional information below to confirm your order");
+            //Console.WriteLine($"Your order total is £{CalculateTotal()}. Please provide additional information below to confirm your order");
             return true;
         }
 
