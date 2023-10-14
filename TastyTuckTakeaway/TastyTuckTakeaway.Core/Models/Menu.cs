@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace TastyTuckTakeaway.Core.Models
 {
@@ -13,16 +12,10 @@ namespace TastyTuckTakeaway.Core.Models
     {
         private static List<MenuItem>? _cachedMenuItems;
         private const string MENU_FILE_PATH = "menu.json";
-        private readonly ILogger<Menu> _logger;
 
-        public Menu(ILogger<Menu> logger)
+        public Menu()
         {
-            if (_cachedMenuItems == null)
-            {
-                _cachedMenuItems = LoadItemsFromJson(MENU_FILE_PATH);
-            }
-
-            _logger = logger;
+            _cachedMenuItems ??= LoadItemsFromJson(MENU_FILE_PATH);
         }
 
         public List<MenuItem> GetMenuItems()
@@ -51,12 +44,12 @@ namespace TastyTuckTakeaway.Core.Models
             }
             catch (FileNotFoundException ex)
             {
-                _logger.LogError("Error: Menu file not found - {ex.Message}", ex);
+                Console.WriteLine($"Error: Menu file not found - {ex.Message}");
                 return new List<MenuItem>();
             }
             catch (JsonException ex)
             {
-                _logger.LogError("Error: Invalid JSON format - {ex.Message}", ex);
+                Console.WriteLine($"Error: Invalid JSON format - {ex.Message}");
                 return new List<MenuItem>();
             }
 

@@ -35,6 +35,10 @@ namespace TastyTuckTakeaway.Core.Services
     {
         private readonly IMenu _menu;
         private readonly Order _order;
+        private const string STARTERS = "starters";
+        private const string MAINS = "mains";
+        private const string DESSERTS = "desserts";
+        private const string DRINKS = "drinks";
 
         public RestaurantService(IMenu menu, Order order)
         {
@@ -45,10 +49,10 @@ namespace TastyTuckTakeaway.Core.Services
         public void ShowMenu()
         {
             var items = _menu.GetMenuItems();
-            ShowCategory(items.Where(i => i.Category == "starters"));
-            ShowCategory(items.Where(i => i.Category == "mains"));
-            ShowCategory(items.Where(i => i.Category == "desserts"));
-            ShowCategory(items.Where(i => i.Category == "drinks"));
+            ShowCategory(items.Where(i => i.Category == STARTERS));
+            ShowCategory(items.Where(i => i.Category == MAINS));
+            ShowCategory(items.Where(i => i.Category == DESSERTS));
+            ShowCategory(items.Where(i => i.Category == DRINKS));
         }
 
         public MenuItem? GetMenuItemById(int itemId)
@@ -116,12 +120,12 @@ namespace TastyTuckTakeaway.Core.Services
             return _order.ViewItemsInBasket();
         }
 
-        private void ShowCategory(IEnumerable<MenuItem> categoryItems)
+        private static void ShowCategory(IEnumerable<MenuItem> categoryItems)
         {
             Console.WriteLine($"{categoryItems.First().Category.ToUpper()}:");
             foreach (var item in categoryItems)
             {
-                Console.WriteLine($"Number: {item.Id}; Name: {item.Name}, Price: £{item.Price}");
+                Console.WriteLine($"Number: {item.Id}, Name: {item.Name}, Price: £{item.Price}");
             }
         }
 
