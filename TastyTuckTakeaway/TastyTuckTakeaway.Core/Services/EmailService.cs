@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
+using TastyTuckTakeaway.Core.Configuration;
 using TastyTuckTakeaway.Core.Enums;
 using TastyTuckTakeaway.Core.Helpers;
 using TastyTuckTakeaway.Core.Models;
@@ -19,16 +20,18 @@ namespace TastyTuckTakeaway.Core.Services
     public class EmailService : IEmailService
     {
         private readonly IPasscodeManager _passcodeManager;
+        private readonly EmailSettings _emailSettings;
 
-        public EmailService(IPasscodeManager passcodeManager)
+        public EmailService(IPasscodeManager passcodeManager, EmailSettings emailSettings)
         {
             _passcodeManager = passcodeManager;
+            _emailSettings = emailSettings;
         }
 
         public async Task<EmailResultTokenBase?> SendEmailAsync(string emailAddress, EmailTypes emailType, int orderNumber = 0, IEnumerable<OrderItem>? orderItems = null)
         {
-            var sender = Environment.GetEnvironmentVariable("DTSCLEANCODEDEMO_GMAIL_ADDRESS") ?? throw new ArgumentNullException();
-            var pw = Environment.GetEnvironmentVariable("DTSCLEANCODEDEMO_GMAIL_PASSWORD") ?? throw new ArgumentNullException();
+            var sender = _emailSettings.Username;
+            var pw = _emailSettings.Password;
 
             var client = SetupSmtpClient(sender, pw);
 
@@ -135,11 +138,11 @@ namespace TastyTuckTakeaway.Core.Services
             return $"<p><strong>Total: £{total}</strong></p>";
         }
 
-        private static SmtpClient SetupSmtpClient(string sendingEmailAddress, string password)
+        private SmtpClient SetupSmtpClient(string sendingEmailAddress, string password)
         {
-            var client = new SmtpClient("smtp.gmail.com")
+            var client = new SmtpClient(_emailSettings.SmtpServer)
             {
-                Port = 587,
+                Port = _emailSettings.Port,
                 Credentials = new NetworkCredential(sendingEmailAddress, password),
                 EnableSsl = true
             };

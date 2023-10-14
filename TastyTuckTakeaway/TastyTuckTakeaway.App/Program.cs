@@ -20,10 +20,11 @@ catch (Exception ex)
 static IHostBuilder CreateHostBuilder(string[] args)
 {
     return Host.CreateDefaultBuilder(args)
-        .ConfigureServices((_, services) =>
+        .ConfigureServices((context, services) =>
         {
+            services.AddEmailSettings(context);
             services.AddCoreDependencies();
-            services.AddLogging();
+
             services.AddSingleton<App>();
         });
 }
