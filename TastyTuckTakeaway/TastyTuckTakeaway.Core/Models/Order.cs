@@ -3,6 +3,8 @@
     public class Order
     {
         private readonly IMenu _menu;
+        private const int SIX_DIGIT_NUMBER_MIN = 100000;
+        private const int SIX_DIGIT_NUMBER_MAX = 1000000;
 
         public Order(IMenu menu)
         {
@@ -100,7 +102,7 @@
 
         private static int GenerateRandomOrderNumber()
         {
-            return new Random().Next(100000, 1000000);
+            return new Random().Next(SIX_DIGIT_NUMBER_MIN, SIX_DIGIT_NUMBER_MAX);
         }
 
         public bool IsBasketEmpty()

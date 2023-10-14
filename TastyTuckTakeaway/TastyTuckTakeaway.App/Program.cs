@@ -23,6 +23,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
         .ConfigureServices((_, services) =>
         {
             services.AddCoreDependencies();
+            services.AddLogging();
             services.AddSingleton<App>();
         });
 }
