@@ -12,6 +12,8 @@
             _menu = menu;
         }
 
+        public int Id { get; set; }
+
         public int OrderNumber { get; private set; }
 
         public List<OrderItem> Basket { get; private set; }
@@ -22,21 +24,22 @@
         {
             var menuItem = _menu.GetMenuItemById(itemId);
 
-            if (menuItem == null)
+            if (menuItem is not null)
             {
-                return false;
+                if (Basket.Any(oi => oi.MenuItem == menuItem))
+                {
+                    Basket.First(oi => oi.MenuItem == menuItem).Quantity += quantity;
+                }
+                else
+                {
+                    var orderItem = OrderItem.Create(menuItem, quantity);
+                    Basket.Add(orderItem);
+                }
+                return true;
             }
 
-            if (!Basket.Any(oi => oi.MenuItem == menuItem))
-            {
-                var orderItem = OrderItem.Create(menuItem, quantity);
-                Basket.Add(orderItem);
-            }
-            else
-            {
-                Basket.First(oi => oi.MenuItem == menuItem).Quantity += quantity;
-            }
-            return true;
+            return false;
+
         }
 
         public IEnumerable<OrderItem> ViewItemsInBasket()
@@ -90,7 +93,7 @@
 
         public bool FinaliseOrder()
         {
-            if (IsBasketEmpty())
+            if (!Basket.Any())
             {
                 return false;
             }

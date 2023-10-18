@@ -1,5 +1,5 @@
-﻿using TastyTuckTakeaway.Core.Enums;
-using TastyTuckTakeaway.Core.Helpers;
+﻿using TastyTuckTakeaway.Core.Helpers;
+using TastyTuckTakeaway.Core.Interfaces;
 using TastyTuckTakeaway.Core.Models;
 using TastyTuckTakeaway.Core.Models.EmailResultTokens;
 using TastyTuckTakeaway.Core.Services;
@@ -247,7 +247,7 @@ namespace TastyTuckTakeaway.App
 
         private async Task<bool> TakeCustomerPayment(string paymentInfo)
         {
-            return await _paymentProcessingService.ProcessPayment(_restaurant.CalculateTotalOrderCost(), paymentInfo);
+            return await _paymentProcessingService.ProcessPayment(_restaurant.CalculateTotalOrderCost(), paymentInfo, new AppUser(1, "", "", "", true), _restaurant.GetOrderId());
         }
 
         private void PreOrderingOptionsScreen()
@@ -408,7 +408,7 @@ namespace TastyTuckTakeaway.App
             var customerEmailAddress = String.IsNullOrEmpty(emailAddress) ? GetCustomerEmailAddress() : emailAddress;
             if (_emailService.IsValidEmail(customerEmailAddress!))
             {
-                return await SendEmail<VerificationEmailResultToken>(customerEmailAddress!, EmailTypes.Verification);
+                return await SendEmail<VerificationEmailResultToken>(customerEmailAddress!, "Verification");
             }
             else
             {
@@ -419,10 +419,10 @@ namespace TastyTuckTakeaway.App
 
         private async Task<OrderConfirmationEmailResultToken?> SendOrderConfirmationEmail(string emailAddress)
         {
-            return await SendEmail<OrderConfirmationEmailResultToken>(emailAddress, EmailTypes.OrderConfirmation, _restaurant.GetOrderNumber(), _restaurant.GetBasketItems());
+            return await SendEmail<OrderConfirmationEmailResultToken>(emailAddress, "OrderConfirmation", _restaurant.GetOrderNumber(), _restaurant.GetBasketItems());
         }
 
-        private async Task<TEmailResultToken?> SendEmail<TEmailResultToken>(string emailAddress, EmailTypes emailType, int orderNumber = 0, IEnumerable<OrderItem>? orderItems = null)
+        private async Task<TEmailResultToken?> SendEmail<TEmailResultToken>(string emailAddress, string emailType, int orderNumber = 0, IEnumerable<OrderItem>? orderItems = null)
             where TEmailResultToken : EmailResultTokenBase
         {
             var emailSentToken = await _emailService.SendEmailAsync(emailAddress, emailType, orderNumber, orderItems);

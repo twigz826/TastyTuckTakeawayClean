@@ -1,53 +1,50 @@
 ﻿using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
-using TastyTuckTakeaway.Core.Configuration;
-using TastyTuckTakeaway.Core.Enums;
 using TastyTuckTakeaway.Core.Helpers;
+using TastyTuckTakeaway.Core.Interfaces;
 using TastyTuckTakeaway.Core.Models;
 using TastyTuckTakeaway.Core.Models.EmailResultTokens;
 using File = System.IO.File;
 
 namespace TastyTuckTakeaway.Core.Services
 {
-    public interface IEmailService
-    {
-        Task<EmailResultTokenBase?> SendEmailAsync(string emailAddress, EmailTypes emailType, int orderNumber = 0, IEnumerable<OrderItem>? orderItems = null);
-
-        bool IsValidEmail(string emailAddress);
-    }
-
     public class EmailService : IEmailService
     {
-        private readonly IPasscodeManager _passcodeManager;
-        private readonly EmailSettings _emailSettings;
+        private readonly IPasscodeManager _pM;
 
-        public EmailService(IPasscodeManager passcodeManager, EmailSettings emailSettings)
+        public EmailService(IPasscodeManager passcodeManager)
         {
-            _passcodeManager = passcodeManager;
-            _emailSettings = emailSettings;
+            _pM = passcodeManager;
         }
 
-        public async Task<EmailResultTokenBase?> SendEmailAsync(string emailAddress, EmailTypes emailType, int orderNumber = 0, IEnumerable<OrderItem>? orderItems = null)
+        public async Task<EmailResultTokenBase?> SendEmailAsync(string emailAddress, string emailType, int orderNumber = 0, IEnumerable<OrderItem>? orderItems = null)
         {
-            var sender = _emailSettings.Username;
-            var pw = _emailSettings.Password;
+            var se = Environment.GetEnvironmentVariable("DTSCLEANCODEDEMO_GMAIL_ADDRESS");
+            var pw = Environment.GetEnvironmentVariable("DTSCLEANCODEDEMO_GMAIL_PASSWORD");
 
-            var client = SetupSmtpClient(sender, pw);
+            var client = new SmtpClient("smtp.gmail.com")
+            {
+                Port = 587,
+                Credentials = new NetworkCredential(se, pw),
+                EnableSsl = true
+            };
 
             try
             {
-                MailMessage message = new();
+                MailMessage message = new MailMessage();
+
                 switch (emailType)
                 {
-                    case EmailTypes.Verification:
-                        var otp = GenerateRandomOTP();
-                        message = ComposeVerificationEmail(emailAddress, sender, otp);
+                    case "Verification":
+                        var random = new Random();
+                        var otp = random.Next(100000, 999999).ToString();
+                        message = ComposeVerificationEmail(emailAddress, se, otp);
                         await client.SendMailAsync(message);
                         return new VerificationEmailResultToken(true, emailAddress, otp);
 
-                    case EmailTypes.OrderConfirmation:
-                        message = ComposeConfirmationEmail(emailAddress, sender, orderNumber, orderItems!);
+                    case "OrderConfirmation":
+                        message = ComposeConfirmationEmail(emailAddress, se, orderNumber, orderItems!);
                         await client.SendMailAsync(message);
                         return new OrderConfirmationEmailResultToken(true, emailAddress, orderNumber);
 
@@ -63,95 +60,62 @@ namespace TastyTuckTakeaway.Core.Services
             }
         }
 
-        public bool IsValidEmail(string? emailAddress)
+        public bool IsValidEmail(string? em)
         {
             string emailPattern = @"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$";
-            if (emailAddress is not null)
+            if (em != null)
             {
-                return Regex.IsMatch(emailAddress, emailPattern);
+                return Regex.IsMatch(em, emailPattern);
             }
             return false;
         }
 
-        private static MailMessage ComposeVerificationEmail(string emailAddress, string sender, string otp)
+        public MailMessage ComposeVerificationEmail(string ea, string se, string otp)
         {
-            var message = new MailMessage
+            var m = new MailMessage
             {
-                From = new MailAddress(sender),
+                From = new MailAddress(se),
                 Subject = "TastyTuckTakeway - Email Verification",
-                Body = GenerateVerificationEmailBodyHtml(otp),
+                Body = File.ReadAllText("verification-email-template.html").Replace("{{OTP}}", otp),
                 IsBodyHtml = true
             };
 
-            message.To.Add(new MailAddress(emailAddress));
-            return message;
+            m.To.Add(new MailAddress(ea));
+            return m;
         }
 
-        private static MailMessage ComposeConfirmationEmail(string emailAddress, string sender, int orderNumber, IEnumerable<OrderItem> orderItems)
+        public MailMessage ComposeConfirmationEmail(string ea, string se, int on, IEnumerable<OrderItem> oi)
         {
-            var message = new MailMessage
+            var m = new MailMessage
             {
-                From = new MailAddress(sender),
+                From = new MailAddress(se),
                 Subject = "TastyTuckTakeway - Order Confirmation",
-                Body = GenerateConfirmationEmailBodyHtml(orderNumber, orderItems),
+                Body = File.ReadAllText("orderconfirmation-email-template.html")
+                    .Replace("{{OrderNumber}}", on.ToString())
+                    .Replace("{{OrderItems}}", AddOrderItemsToHtml(oi)),
                 IsBodyHtml = true
             };
 
-            message.To.Add(new MailAddress(emailAddress));
-            return message;
+            m.To.Add(new MailAddress(ea));
+            return m;
         }
 
-        private static string GenerateVerificationEmailBodyHtml(string otp)
+        public static string AddOrderItemsToHtml(IEnumerable<OrderItem> items)
         {
-            var htmlTemplate = File.ReadAllText("verification-email-template.html");
-            var emailBody = htmlTemplate.Replace("{{OTP}}", otp);
-            return emailBody;
-        }
-
-        private static string GenerateConfirmationEmailBodyHtml(int orderNumber, IEnumerable<OrderItem> orderItems)
-        {
-            var htmlTemplate = File.ReadAllText("orderconfirmation-email-template.html");
-            var emailBody = htmlTemplate.Replace("{{OrderNumber}}", orderNumber.ToString());
-            emailBody = AddOrderItemsToHtml(emailBody, orderItems);
-
-            return emailBody;
-        }
-
-        private static string AddOrderItemsToHtml(string emailBody, IEnumerable<OrderItem> orderItems)
-        {
-            var orderItemsHtml = "<ul style='list-style-type: none; padding-left: 0;'>";
-            foreach (var orderItem in orderItems)
+            var oih = "<ul style='list-style-type: none; padding-left: 0;'>";
+            foreach (var oi in items)
             {
-                orderItemsHtml += $"<li>{orderItem.Quantity} x {orderItem.MenuItem.Name} - {orderItem.Quantity * orderItem.MenuItem.Price}</li>";
+                oih += $"<li>{oi.Quantity} x {oi.MenuItem.Name} - {oi.Quantity * oi.MenuItem.Price}</li>";
             }
-            orderItemsHtml += "</ul>";
+            oih += "</ul>";
 
-            var totalHtml = AddTotalToHtml(orderItems);
-
-            emailBody = emailBody.Replace("{{OrderItems}}", orderItemsHtml + totalHtml);
-            return emailBody;
+            var t = items.Sum(item => item.Quantity * item.MenuItem.Price);
+            return oih + $"<p><strong>Total: £{t}</strong></p>";
         }
 
-        private static object AddTotalToHtml(IEnumerable<OrderItem> orderItems)
+        public string GenerateRandomOTP()
         {
-            var total = orderItems.Sum(item => item.Quantity * item.MenuItem.Price);
-            return $"<p><strong>Total: £{total}</strong></p>";
-        }
-
-        private SmtpClient SetupSmtpClient(string sendingEmailAddress, string password)
-        {
-            var client = new SmtpClient(_emailSettings.SmtpServer)
-            {
-                Port = _emailSettings.Port,
-                Credentials = new NetworkCredential(sendingEmailAddress, password),
-                EnableSsl = true
-            };
-            return client;
-        }
-
-        private string GenerateRandomOTP()
-        {
-            return _passcodeManager.GenerateOTP();
+            return _pM.GenerateOTP();
         }
     }
 }

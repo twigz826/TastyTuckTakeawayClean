@@ -1,15 +1,8 @@
 ﻿using System.Text.RegularExpressions;
+using TastyTuckTakeaway.Core.Interfaces;
 
 namespace TastyTuckTakeaway.Core.Helpers
 {
-    public interface IAddressManager
-    {
-        bool IsValidHouseNumber(string inputHouseNum);
-
-        bool IsValidUKPostcode(string postcode);
-
-        bool IsValidStreetName(string? streetName);
-    }
     public class AddressManager : IAddressManager
     {
         public bool IsValidHouseNumber(string? inputHouseNum)

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using TastyTuckTakeaway.Core.Configuration;
 using TastyTuckTakeaway.Core.Helpers;
+using TastyTuckTakeaway.Core.Interfaces;
 using TastyTuckTakeaway.Core.Models;
 using TastyTuckTakeaway.Core.Services;
 

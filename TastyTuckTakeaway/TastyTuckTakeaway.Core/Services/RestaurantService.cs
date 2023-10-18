@@ -29,6 +29,8 @@ namespace TastyTuckTakeaway.Core.Services
         void AddAddressToOrder(string houseNumber, string streetName, string postcode);
 
         IEnumerable<OrderItem> GetBasketItems();
+
+        int GetOrderId();
     }
 
     public class RestaurantService : IRestaurantService
@@ -92,6 +94,11 @@ namespace TastyTuckTakeaway.Core.Services
         public bool IsBasketEmpty()
         {
             return _order.IsBasketEmpty();
+        }
+
+        public int GetOrderId()
+        {
+            return _order.Id;
         }
 
         public bool FinaliseOrder()
