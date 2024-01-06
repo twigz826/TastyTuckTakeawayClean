@@ -20,13 +20,13 @@ namespace TastyTuckTakeaway.Core.Services
 
         public async Task<EmailResultTokenBase?> SendEmailAsync(string emailAddress, string emailType, int orderNumber = 0, IEnumerable<OrderItem>? orderItems = null)
         {
-            var se = Environment.GetEnvironmentVariable("DTSCLEANCODEDEMO_GMAIL_ADDRESS");
+            var emailSender = Environment.GetEnvironmentVariable("DTSCLEANCODEDEMO_GMAIL_ADDRESS");
             var pw = Environment.GetEnvironmentVariable("DTSCLEANCODEDEMO_GMAIL_PASSWORD");
 
             var client = new SmtpClient("smtp.gmail.com")
             {
                 Port = 587,
-                Credentials = new NetworkCredential(se, pw),
+                Credentials = new NetworkCredential(emailSender, pw),
                 EnableSsl = true
             };
 
@@ -39,12 +39,12 @@ namespace TastyTuckTakeaway.Core.Services
                     case "Verification":
                         var random = new Random();
                         var otp = random.Next(100000, 999999).ToString();
-                        message = ComposeVerificationEmail(emailAddress, se, otp);
+                        message = ComposeVerificationEmail(emailAddress, emailSender, otp);
                         await client.SendMailAsync(message);
                         return new VerificationEmailResultToken(true, emailAddress, otp);
 
                     case "OrderConfirmation":
-                        message = ComposeConfirmationEmail(emailAddress, se, orderNumber, orderItems!);
+                        message = ComposeConfirmationEmail(emailAddress, emailSender, orderNumber, orderItems!);
                         await client.SendMailAsync(message);
                         return new OrderConfirmationEmailResultToken(true, emailAddress, orderNumber);
 
@@ -62,7 +62,7 @@ namespace TastyTuckTakeaway.Core.Services
 
         public bool IsValidEmail(string? em)
         {
-            string emailPattern = @"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$";
+            var emailPattern = @"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$";
             if (em != null)
             {
                 return Regex.IsMatch(em, emailPattern);
